@@ -1396,20 +1396,6 @@ window._adminPlinkoBucket = null;
 
 /* ─── AUDIO ─── */
 let AC=null,SND=false;
- // 🔇 stop sound when tab is hidden
-document.addEventListener('visibilitychange', () => {
-  if (!AC) return;
-
-  if (document.hidden) {
-    if (AC.state === 'running') {
-      AC.suspend();
-    }
-  } else {
-    if (AC.state === 'suspended') {
-      AC.resume();
-    }
-  }
-});
 function iAC(){if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();}
 function tone(f,t,v,a,d,w=0){if(!SND||!AC)return;try{const g=AC.createGain(),o=AC.createOscillator();o.type=t;o.frequency.value=f;const n=AC.currentTime+w;g.gain.setValueAtTime(0,n);g.gain.linearRampToValueAtTime(v,n+a);g.gain.exponentialRampToValueAtTime(.0001,n+a+d);o.connect(g);g.connect(AC.destination);o.start(n);o.stop(n+a+d+.05);}catch(e){}}
 function sClick(){tone(400,'sine',.09,.004,.06);}
@@ -1425,6 +1411,7 @@ function sCrashTick(m){if(!SND||!AC||Math.random()>.12)return;if(!document.getEl
 function sCrashBoom(){if(!SND||!AC)return;if(!document.getElementById('page-crash').classList.contains('active'))return;tone(80,'sawtooth',.18,.005,.4);tone(60,'sawtooth',.12,.005,.5,.06);}
 function sWheelTick(progress){
   if(!SND||!AC)return;
+  if(!document.getElementById('page-wheel').classList.contains('active')) return;
   try{
     // Short noise burst filtered to a "tick" — no oscillator = no artifacts
     const sampleRate=AC.sampleRate;
