@@ -1396,6 +1396,20 @@ window._adminPlinkoBucket = null;
 
 /* ─── AUDIO ─── */
 let AC=null,SND=false;
+ // 🔇 stop sound when tab is hidden
+document.addEventListener('visibilitychange', () => {
+  if (!AC) return;
+
+  if (document.hidden) {
+    if (AC.state === 'running') {
+      AC.suspend();
+    }
+  } else {
+    if (AC.state === 'suspended') {
+      AC.resume();
+    }
+  }
+});
 function iAC(){if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();}
 function tone(f,t,v,a,d,w=0){if(!SND||!AC)return;try{const g=AC.createGain(),o=AC.createOscillator();o.type=t;o.frequency.value=f;const n=AC.currentTime+w;g.gain.setValueAtTime(0,n);g.gain.linearRampToValueAtTime(v,n+a);g.gain.exponentialRampToValueAtTime(.0001,n+a+d);o.connect(g);g.connect(AC.destination);o.start(n);o.stop(n+a+d+.05);}catch(e){}}
 function sClick(){tone(400,'sine',.09,.004,.06);}
